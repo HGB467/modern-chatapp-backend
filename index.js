@@ -236,6 +236,24 @@ io.on("connection", (socket) => {
     })
   })
 
+  socket.on("ShareFile",({uid,myID,fileSize,fileName})=>{
+   const getUser = userCart.filter((item)=>item.uid===uid)[0]
+   const getName = userCart.filter((item)=>item.uid===myID)[0]
+   console.log('done',getUser,getName)
+   if(getUser&&getName){
+    console.log('activated')
+    io.to(getUser.socketId).emit("receiveFile",{name:getName.name,fileSize:fileSize,fileName:fileName,requesterID:getName.uid})
+   }
+  })
+
+  socket.on("requestAns",({id,answer,myID})=>{
+    const getUser = userCart.filter((item)=>item.uid===id)[0]
+    const getName = userCart.filter((item)=>item.uid===myID)[0]
+    if(getUser&&getName){
+     io.to(getUser.socketId).emit("sendAns",{name:getName.name,responderID:getName.uid,answer,responderPeerID:getName.peerId})
+    }
+  })
+
 
   socket.on('disconnect',()=>{
       const gettingUser = userCart.filter((item)=>item.socketId===socket.id)
